@@ -1,207 +1,148 @@
-# AI Email Generator Using Google Gemini
+# AI Email Generator
 
-## Project Overview
+A simple AI-powered email generation application built with Streamlit, FastAPI, and Google's Gemini model. Users describe the email they need, and the application returns a professional draft.
 
-The AI Email Generator is a web application that generates professional emails using artificial intelligence.
+## Features
 
-Users can describe the email they want in simple natural language. The application sends the prompt to the backend, where the Google Gemini 2.5 Flash model generates an email containing a subject, greeting, body, and closing.
-
-The generated email is then displayed through an interactive Streamlit interface.
-
-## Key Features
-
-- Generate professional emails using natural language prompts.
-- Integrate Google Gemini 2.5 Flash for AI-powered email generation.
-- Streamlit-based user interface.
-- FastAPI backend for handling requests.
-- REST API integration between frontend and backend.
-- Automatically generate email subject, greeting, body, and closing.
-
-## Technologies Used
-
-| Category | Technologies |
-|---|---|
-| Programming Language | Python |
-| Frontend | Streamlit |
-| Backend | FastAPI |
-| AI Model | Google Gemini 2.5 Flash |
-| AI Integration | Google Generative AI SDK |
-| API Communication | REST API |
-| Data Validation | Pydantic |
-| HTTP Requests | Requests |
-
-## Project Architecture
-
-The application follows a frontend and backend architecture.
-
-1. The user enters an email request in the Streamlit interface.
-2. Streamlit sends the prompt to the FastAPI backend.
-3. FastAPI validates the request using a Pydantic model.
-4. The backend constructs a prompt for Google Gemini.
-5. Gemini generates the professional email.
-6. FastAPI returns the generated email as a JSON response.
-7. Streamlit displays the generated email.
+- Generate email drafts from natural-language instructions.
+- Create drafts with a subject, greeting, body, and closing.
+- Streamlit interface for entering requests and viewing generated emails.
+- FastAPI backend with request validation.
+- Gemini 2.5 Flash integration.
+- Basic handling for missing API configuration, API errors, and request timeouts.
 
 ## Project Structure
 
 ```text
 Email_Generator/
-|
 ├── app.py
 ├── main.py
+├── requirements.txt
+├── .env.example
+├── .gitignore
 └── README.md
 ```
 
-### File Description
+## Technology Stack
 
-| File | Description |
-|---|---|
-| app.py | Streamlit frontend for entering prompts and displaying generated emails. |
-| main.py | FastAPI backend responsible for Gemini integration and email generation. |
-| README.md | Project documentation. |
+- Python
+- Streamlit
+- FastAPI
+- Google Generative AI SDK
+- Gemini 2.5 Flash
+- Pydantic
+- Requests
+- python-dotenv
+- Uvicorn
 
-## Installation and Setup
+## Prerequisites
 
-### 1. Clone the Repository
+- Python 3.10 or later.
+- A Google Gemini API key.
 
-```bash
-git clone https://github.com/phanikumar-145/Email_Generator.git
-```
+## Setup
 
-### 2. Navigate to the Project Directory
+1. Clone the repository:
 
-```bash
-cd Email_Generator
-```
+   ```bash
+   git clone https://github.com/phanikumar-145/Email_Generator.git
+   cd Email_Generator
+   ```
 
-### 3. Create a Virtual Environment
+2. Create and activate a virtual environment:
 
-```bash
-python -m venv venv
-```
+   **Windows PowerShell**
+   ```powershell
+   python -m venv .venv
+   .venv\Scripts\Activate.ps1
+   ```
 
-Activate the environment on Windows:
+   **macOS/Linux**
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate
+   ```
 
-```bash
-venv\Scripts\activate
-```
+3. Install dependencies:
 
-### 4. Install Required Libraries
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-```bash
-pip install streamlit fastapi uvicorn requests google-generativeai pydantic
-```
+4. Create a local `.env` file by copying `.env.example`, then add your Gemini API key:
 
-### 5. Configure Google Gemini API Key
+   ```env
+   GEMINI_API_KEY=your_actual_api_key
+   ```
 
-Generate a Google Gemini API key and configure it securely using an environment variable.
+   Do not upload `.env` or share your API key publicly.
 
-For Windows PowerShell:
+## Run the Application
 
-```powershell
-$env:GOOGLE_API_KEY="your_api_key"
-```
+Open two terminals from the project directory. Activate the same virtual environment in both.
 
-Update the backend configuration to read the environment variable:
-
-```python
-import os
-import google.generativeai as genai
-
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-```
-
-Do not publish your actual API key on GitHub.
-
-### 6. Start the FastAPI Backend
-
-Open a terminal and run:
+**Terminal 1: Start the FastAPI backend**
 
 ```bash
 uvicorn main:app --reload
 ```
 
-The backend will run at:
+The API runs at `http://127.0.0.1:8000`.
 
-```text
-http://127.0.0.1:8000
-```
+Interactive API documentation is available at `http://127.0.0.1:8000/docs`.
 
-### 7. Start the Streamlit Frontend
-
-Open another terminal with the same virtual environment activated:
+**Terminal 2: Start the Streamlit frontend**
 
 ```bash
 streamlit run app.py
 ```
 
-The Streamlit application will open in your browser.
+Streamlit will display a local URL in the terminal. Open it in your browser.
 
-## API Documentation
+## How It Works
 
-### Generate Email
+1. The user enters a description of the email in the Streamlit interface.
+2. Streamlit sends the prompt to the FastAPI endpoint `POST /generate-email`.
+3. FastAPI validates the request using Pydantic.
+4. The backend sends instructions and the user's prompt to Gemini 2.5 Flash.
+5. The generated email is returned as JSON and displayed in the Streamlit interface.
 
-**Endpoint:** `POST /generate-email`
+## API Endpoint
 
-**Request Body:**
+### `POST /generate-email`
 
-```json
-{
-    "prompt": "Write a professional email requesting leave for two days due to personal reasons."
-}
-```
-
-**Successful Response:**
+Request body:
 
 ```json
 {
-    "email": "Subject: Leave Request\n\nDear Manager,\n\nI would like to request leave for two days due to personal reasons...\n\nBest regards"
+  "prompt": "Write an email requesting leave for one day."
 }
 ```
 
-The response contains the generated email as a string.
+Example response:
 
-## Example Prompts
-
-**Leave Request**
-
-```text
-Write a professional email requesting two days of leave due to personal reasons.
+```json
+{
+  "email": "Subject: Leave Request\n\nDear Manager,\n..."
+}
 ```
 
-**Job Application**
+Additional endpoints:
 
-```text
-Write an email applying for a Python Developer position as a fresher.
-```
+- `GET /` - API welcome message.
+- `GET /health` - Basic service health and API-key configuration status.
 
-**Meeting Request**
+## Important Notes
 
-```text
-Write a professional email requesting a meeting with my project manager to discuss project progress.
-```
-
-**Follow-up Email**
-
-```text
-Write a polite follow-up email asking about the status of my job application.
-```
+- The backend and frontend must both be running for the application to work.
+- The Streamlit frontend currently connects to `http://127.0.0.1:8000`. For deployment, configure the backend URL through an environment variable or deployment settings.
+- Review and edit generated emails before sending them. AI-generated content can contain mistakes.
+- The application sends the user's prompt to Google's Gemini service for generation. Do not enter confidential or sensitive information unless you are permitted to share it with that service.
 
 ## Future Improvements
 
-- Add email tone selection, such as formal, friendly, and professional.
-- Provide options for short and detailed emails.
-- Add email regeneration and editing functionality.
-- Include copy-to-clipboard functionality.
-- Add input validation and better error handling.
-- Add email templates for job applications, leave requests, business communication, and follow-ups.
-- Add user authentication and email generation history.
+- Add email tone and length controls.
 - Support multiple languages.
-
-## Author
-
-**Phani Kumar**
-
-AI/ML and Generative AI Developer
-
-GitHub: https://github.com/phanikumar-145
+- Add copy and download options.
+- Add automated tests.
+- Make the backend URL configurable for deployment.
